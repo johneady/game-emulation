@@ -1,0 +1,168 @@
+#!/usr/bin/env bash
+#
+# add-game - package a DOS game folder into a js-dos bundle and add it to the launcher.
+#
+#   add-game <folder> [--exe FILE] [--title "Name"] [--sub "Subtitle"] [--id slug]
+#   add-game --list
+#   add-game --remove <id>
+#
+# <folder> may be a path under /opt/dosgames or any absolute path.
+# If --exe is omitted the script finds the executable, prompting when ambiguous.
+
+set -euo pipefail
+
+GAMES_SRC=/opt/dosgames
+WEB=/var/www/dosgames
+BUNDLES=$WEB/games
+MANIFEST=$WEB/games.json
+
+die() { echo "error: $*" >&2; exit 1; }
+
+[ -d "$BUNDLES" ] || die "$BUNDLES not found - is this the dosgames container?"
+
+# --- manifest helpers (python3 keeps the JSON valid; no sed-on-HTML) ---
+manifest_list() {
+    python3 - "$MANIFEST" <<'PY'
+import json, sys, os
+p = sys.argv[1]
+games = json.load(open(p)) if os.path.exists(p) else []
+if not games:
+    print("(no games)")
+else:
+    w = max(len(g["id"]) for g in games)
+    for g in games:
+        print(f'{g["id"]:<{w}}  {g["title"]}  [{g.get("sub","")}]')
+PY
+}
+
+manifest_upsert() {
+    python3 - "$MANIFEST" "$1" "$2" "$3" <<'PY'
+import json, sys, os
+path, gid, title, sub = sys.argv[1:5]
+games = json.load(open(path)) if os.path.exists(path) else []
+games = [g for g in games if g["id"] != gid]
+games.append({"id": gid, "title": title, "sub": sub})
+games.sort(key=lambda g: g["title"].lower())
+json.dump(games, open(path, "w"), indent=2)
+PY
+}
+
+manifest_remove() {
+    python3 - "$MANIFEST" "$1" <<'PY'
+import json, sys, os
+path, gid = sys.argv[1:3]
+games = json.load(open(path)) if os.path.exists(path) else []
+kept = [g for g in games if g["id"] != gid]
+if len(kept) == len(games):
+    print(f"warning: no game with id '{gid}' in manifest", file=sys.stderr)
+json.dump(kept, open(path, "w"), indent=2)
+PY
+}
+
+# --- modes ---
+if [ "${1:-}" = "--list" ]; then
+    manifest_list
+    exit 0
+fi
+
+if [ "${1:-}" = "--remove" ]; then
+    ID="${2:-}"
+    [ -n "$ID" ] || die "usage: add-game --remove <id>"
+    manifest_remove "$ID"
+    rm -f "$BUNDLES/$ID.jsdos"
+    echo "removed '$ID' (bundle deleted; source folder untouched)"
+    exit 0
+fi
+
+SRC="${1:-}"
+[ -n "$SRC" ] || die "usage: add-game <folder> [--exe FILE] [--title \"Name\"] [--sub \"Text\"] [--id slug]"
+shift
+
+EXE=""; TITLE=""; SUB=""; ID=""
+while [ $# -gt 0 ]; do
+    case "$1" in
+        --exe)   EXE="${2:-}";   shift 2 ;;
+        --title) TITLE="${2:-}"; shift 2 ;;
+        --sub)   SUB="${2:-}";   shift 2 ;;
+        --id)    ID="${2:-}";    shift 2 ;;
+        *) die "unknown option: $1" ;;
+    esac
+done
+
+# Resolve folder: bare name is looked up under /opt/dosgames.
+if [ -d "$SRC" ]; then
+    DIR="$(cd "$SRC" && pwd)"
+elif [ -d "$GAMES_SRC/$SRC" ]; then
+    DIR="$GAMES_SRC/$SRC"
+else
+    die "folder not found: $SRC (looked in ./ and $GAMES_SRC/)"
+fi
+
+BASE="$(basename "$DIR")"
+[ -z "$ID" ]    && ID="$(echo "$BASE"  | tr '[:upper:]' '[:lower:]' | tr -cd 'a-z0-9-')"
+[ -z "$TITLE" ] && TITLE="$BASE"
+[ -n "$ID" ] || die "could not derive an id; pass --id"
+
+# --- pick the executable ---
+if [ -z "$EXE" ]; then
+    mapfile -t CANDS < <(cd "$DIR" && find . -maxdepth 1 -type f \
+        \( -iname '*.exe' -o -iname '*.com' -o -iname '*.bat' \) -printf '%f\n' | sort)
+
+    [ "${#CANDS[@]}" -gt 0 ] || die "no .exe/.com/.bat found in $DIR - pass --exe"
+
+    if [ "${#CANDS[@]}" -eq 1 ]; then
+        EXE="${CANDS[0]}"
+        echo "executable: $EXE"
+    else
+        # Prefer one matching the folder name, else ask.
+        for c in "${CANDS[@]}"; do
+            stem="${c%.*}"
+            if [ "$(echo "$stem" | tr '[:upper:]' '[:lower:]')" = "$(echo "$BASE" | tr '[:upper:]' '[:lower:]')" ]; then
+                EXE="$c"; break
+            fi
+        done
+        if [ -n "$EXE" ]; then
+            echo "executable: $EXE (matched folder name)"
+        else
+            echo "Multiple executables in $BASE:"
+            PS3="choose the one that starts the game: "
+            select c in "${CANDS[@]}"; do
+                [ -n "${c:-}" ] && { EXE="$c"; break; }
+            done
+            [ -n "$EXE" ] || die "no executable chosen"
+        fi
+    fi
+fi
+
+[ -f "$DIR/$EXE" ] || die "executable not found in folder: $EXE"
+
+# --- build the bundle ---
+WORK="$(mktemp -d)"
+trap 'rm -rf "$WORK"' EXIT
+mkdir -p "$WORK/.jsdos"
+cp -r "$DIR"/. "$WORK"/
+
+cat > "$WORK/.jsdos/dosbox.conf" <<CONF
+[sdl]
+autolock=true
+
+[cpu]
+core=auto
+cputype=auto
+cycles=auto
+
+[autoexec]
+mount c .
+c:
+$EXE
+CONF
+
+rm -f "$BUNDLES/$ID.jsdos"
+( cd "$WORK" && zip -qr "$BUNDLES/$ID.jsdos" . )
+chmod 644 "$BUNDLES/$ID.jsdos"
+
+manifest_upsert "$ID" "$TITLE" "$SUB"
+
+SIZE=$(du -h "$BUNDLES/$ID.jsdos" | cut -f1)
+echo "added '$TITLE' as $ID.jsdos ($SIZE, runs $EXE)"
+echo "reload http://192.168.1.63/ to play"

@@ -1,0 +1,244 @@
+[
+  {
+    "id": "nes",
+    "label": "NES",
+    "core": "fceumm",
+    "games": [
+      {
+        "file": "/roms/NES Roms/10-Yard Fight (USA, Europe).nes",
+        "title": "10-Yard Fight",
+        "sub": "USA",
+        "size": 40976
+      },
+      {
+        "file": "/roms/NES Roms/1942 (Japan, USA).nes",
+        "title": "1942",
+        "sub": "Japan",
+        "size": 40976
+      },
+      {
+        "file": "/roms/NES Roms/1943 - The Battle of Midway (USA).nes",
+        "title": "1943 - The Battle of Midway",
+        "sub": "USA",
+        "size": 131088
+      },
+      {
+        "file": "/roms/NES Roms/2048 (Homebrew).nes",
+        "title": "2048",
+        "sub": "",
+        "size": 16400
+      },
+      {
+        "file": "/roms/NES Roms/Bomberman (USA).nes",
+        "title": "Bomberman",
+        "sub": "USA",
+        "size": 24592
+      },
+      {
+        "file": "/roms/NES Roms/BurgerTime (USA).nes",
+        "title": "BurgerTime",
+        "sub": "USA",
+        "size": 24592
+      },
+      {
+        "file": "/roms/NES Roms/Galaga - Demons of Death (USA).nes",
+        "title": "Galaga - Demons of Death",
+        "sub": "USA",
+        "size": 40976
+      },
+      {
+        "file": "/roms/NES Roms/Mario Bros. (World).nes",
+        "title": "Mario Bros.",
+        "sub": "World",
+        "size": 24592
+      },
+      {
+        "file": "/roms/NES Roms/Mike_tyson's_punch_out.nes",
+        "title": "Mike tyson's punch out",
+        "sub": "",
+        "size": 262160
+      },
+      {
+        "file": "/roms/NES Roms/Othello (USA).nes",
+        "title": "Othello",
+        "sub": "USA",
+        "size": 40976
+      },
+      {
+        "file": "/roms/NES Roms/Pac-Man (USA) (Namco).nes",
+        "title": "Pac-Man (Namco)",
+        "sub": "USA",
+        "size": 24592
+      },
+      {
+        "file": "/roms/NES Roms/Pro Sport Hockey (USA).nes",
+        "title": "Pro Sport Hockey",
+        "sub": "USA",
+        "size": 262160
+      },
+      {
+        "file": "/roms/NES Roms/R.B.I. Baseball 3 (USA) (Unl).nes",
+        "title": "R.B.I. Baseball 3",
+        "sub": "USA",
+        "size": 196624
+      },
+      {
+        "file": "/roms/NES Roms/Super 42-in-1 [p1][!].nes",
+        "title": "Super 42-in-1",
+        "sub": "",
+        "size": 1048592
+      },
+      {
+        "file": "/roms/NES Roms/Super Mario Bros. (World).nes",
+        "title": "Super Mario Bros.",
+        "sub": "World",
+        "size": 40976
+      },
+      {
+        "file": "/roms/NES Roms/Tecmo Bowl (USA) (Rev A).nes",
+        "title": "Tecmo Bowl",
+        "sub": "USA",
+        "size": 262160
+      },
+      {
+        "file": "/roms/NES Roms/Tecmo2020_rev3.nes",
+        "title": "Tecmo2020 rev3",
+        "sub": "",
+        "size": 786448
+      },
+      {
+        "file": "/roms/NES Roms/Tetris (USA).nes",
+        "title": "Tetris",
+        "sub": "USA",
+        "size": 49168
+      },
+      {
+        "file": "/roms/NES Roms/Track & Field (USA).nes",
+        "title": "Track & Field",
+        "sub": "USA",
+        "size": 65552
+      },
+      {
+        "file": "/roms/NES Roms/World Games (USA).nes",
+        "title": "World Games",
+        "sub": "USA",
+        "size": 131088
+      }
+    ]
+  },
+  {
+    "id": "ps1",
+    "label": "PS1",
+    "core": "pcsx_rearmed",
+    "games": [
+      {
+        "file": "/roms/PS1 Roms/Crash Bandicoot (USA).7z",
+        "title": "Crash Bandicoot",
+        "sub": "USA",
+        "size": 632083837
+      },
+      {
+        "file": "/roms/PS1 Roms/Destruction Derby 2 (USA).7z",
+        "title": "Destruction Derby 2",
+        "sub": "USA",
+        "size": 559231063
+      },
+      {
+        "file": "/roms/PS1 Roms/Doom (USA).7z",
+        "title": "Doom",
+        "sub": "USA",
+        "size": 199541794
+      },
+      {
+        "file": "/roms/PS1 Roms/Driver - You Are the Wheelman (USA) (Rev 1).chd",
+        "title": "Driver - You Are the Wheelman",
+        "sub": "USA",
+        "size": 465566193
+      },
+      {
+        "file": "/roms/PS1 Roms/Driver 2 (USA) (Disc 1) (v1.0).7z",
+        "title": "Driver 2 (Disc 1)",
+        "sub": "USA",
+        "size": 357212520
+      },
+      {
+        "file": "/roms/PS1 Roms/Gran Turismo 2 (USA) (Arcade Mode) (Rev 1).chd",
+        "title": "Gran Turismo 2 (Arcade Mode)",
+        "sub": "USA",
+        "size": 474936146
+      },
+      {
+        "file": "/roms/PS1 Roms/Hot Shots Golf (USA).7z",
+        "title": "Hot Shots Golf",
+        "sub": "USA",
+        "size": 143083229
+      },
+      {
+        "file": "/roms/PS1 Roms/Hot Shots Golf 2 (USA) (Demo).7z",
+        "title": "Hot Shots Golf 2",
+        "sub": "USA",
+        "size": 19897455
+      },
+      {
+        "file": "/roms/PS1 Roms/Knockout Kings 2001 (USA).7z",
+        "title": "Knockout Kings 2001",
+        "sub": "USA",
+        "size": 416972716
+      },
+      {
+        "file": "/roms/PS1 Roms/Madden NFL 98 (USA).7z",
+        "title": "Madden NFL 98",
+        "sub": "USA",
+        "size": 397257550
+      },
+      {
+        "file": "/roms/PS1 Roms/Medal of Honor (USA).7z",
+        "title": "Medal of Honor",
+        "sub": "USA",
+        "size": 415730739
+      },
+      {
+        "file": "/roms/PS1 Roms/Medal of Honor - Underground (USA).7z",
+        "title": "Medal of Honor - Underground",
+        "sub": "USA",
+        "size": 473239639
+      },
+      {
+        "file": "/roms/PS1 Roms/Road Rash 3D (USA).7z",
+        "title": "Road Rash 3D",
+        "sub": "USA",
+        "size": 610621832
+      },
+      {
+        "file": "/roms/PS1 Roms/San Francisco Rush - Extreme Racing (USA).7z",
+        "title": "San Francisco Rush - Extreme Racing",
+        "sub": "USA",
+        "size": 102286327
+      },
+      {
+        "file": "/roms/PS1 Roms/Tiny Tank (USA).chd",
+        "title": "Tiny Tank",
+        "sub": "USA",
+        "size": 451958030
+      },
+      {
+        "file": "/roms/PS1 Roms/Twisted Metal (USA).7z",
+        "title": "Twisted Metal",
+        "sub": "USA",
+        "size": 228221607
+      },
+      {
+        "file": "/roms/PS1 Roms/World's Scariest Police Chases (USA).7z",
+        "title": "World's Scariest Police Chases",
+        "sub": "USA",
+        "size": 126808813
+      },
+      {
+        "file": "/roms/PS1 Roms/XS Moto (USA).7z",
+        "title": "XS Moto",
+        "sub": "USA",
+        "size": 338147476
+      }
+    ]
+  }
+]

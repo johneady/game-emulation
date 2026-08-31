@@ -1,0 +1,12 @@
+# Game content: copyrighted and/or large - never commit
+data/games/
+data/dosgames/
+data/art/
+
+# Local backups (e.g. ROM exports)
+*.tar.gz
+*.tgz
+*.tmp
+__pycache__/
+.DS_Store
+node_modules/

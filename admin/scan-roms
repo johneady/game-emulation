@@ -1,0 +1,78 @@
+#!/usr/bin/env bash
+#
+# scan-roms - rebuild the console half of the launcher manifest from /opt/roms.
+# DOS entries in games.json are managed by add-game and are left untouched.
+
+set -euo pipefail
+
+ROMS=/opt/roms/Roms
+WEB=/var/www/dosgames
+MANIFEST=$WEB/consoles.json
+
+[ -d "$ROMS" ] || { echo "error: $ROMS not found" >&2; exit 1; }
+
+python3 - "$ROMS" "$MANIFEST" <<'PY'
+import json, os, re, sys
+
+roms_dir, out = sys.argv[1], sys.argv[2]
+
+SYSTEMS = [
+    ("nes", "NES",  "NES Roms", "fceumm",       (".nes",)),
+    ("ps1", "PS1",  "PS1 Roms", "pcsx_rearmed", (".chd", ".cue", ".pbp", ".iso", ".7z")),
+]
+
+def title_of(fn):
+    t = os.path.splitext(fn)[0]
+    t = re.sub(r"\s*\((?:USA|Europe|Japan|World|En|Fr|De|Es|Rev [^)]*|v[\d.]+|Unl|Homebrew)[^)]*\)", "", t)
+    t = re.sub(r"\s*\[[^\]]*\]", "", t)
+    t = t.replace("_", " ").strip(" -")
+    return re.sub(r"\s{2,}", " ", t) or os.path.splitext(fn)[0]
+
+def region_of(fn):
+    for r in ("USA", "Europe", "Japan", "World"):
+        if f"({r}" in fn:
+            return r
+    return ""
+
+def rom_files(d):
+    """Playable files in the system folder, one level deep at most.
+
+    PS1 games arrive as a single .7z/.chd, but a stray folder (from an older
+    install or manual copy) is still scanned for its cue rather than ignored.
+    """
+    for fn in sorted(os.listdir(d)):
+        full = os.path.join(d, fn)
+        if os.path.isfile(full):
+            yield full
+        elif os.path.isdir(full):
+            for sub in sorted(os.listdir(full)):
+                subfull = os.path.join(full, sub)
+                if os.path.isfile(subfull):
+                    yield subfull
+
+out_systems = []
+for sid, label, folder, core, exts in SYSTEMS:
+    d = os.path.join(roms_dir, folder)
+    if not os.path.isdir(d):
+        continue
+    games = []
+    for path in rom_files(d):
+        fn = os.path.basename(path)
+        if not fn.lower().endswith(exts):
+            continue
+        games.append({
+            "file": f"/roms/{folder}/{os.path.relpath(path, d)}",
+            "title": title_of(fn),
+            "sub": region_of(fn),
+            "size": os.path.getsize(path),
+        })
+    if games:
+        out_systems.append({"id": sid, "label": label, "core": core, "games": games})
+
+json.dump(out_systems, open(out, "w"), indent=2)
+for s in out_systems:
+    print(f'{s["label"]:<4} {len(s["games"]):>3} games (core: {s["core"]})')
+PY
+
+chmod 644 "$MANIFEST"
+echo "wrote $MANIFEST"

@@ -1,0 +1,19 @@
+[Unit]
+Description=Retro launcher admin service (box art, game uploads, hiding)
+After=network.target
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/python3 /usr/local/bin/admin-service.py
+Restart=on-failure
+RestartSec=2
+
+# Writes bundles, manifests, ROMs, uploaded art and upload staging.
+ProtectSystem=strict
+ReadWritePaths=/opt/art /opt/roms /opt/uploads /var/www/dosgames
+ProtectHome=yes
+PrivateTmp=yes
+NoNewPrivileges=yes
+
+[Install]
+WantedBy=multi-user.target
